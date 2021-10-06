@@ -1,18 +1,18 @@
 // async function encryptDataSaveKey() {
-//   var data = await makeRandomData();
+//   const data = await makeRandomData();
 //   console.log("generated data", data);
-//   var keys = await makeEncryptionKeys();
-//   var encrypted = await encrypt(data, keys);
+//   const keys = await makeEncryptionKeys();
+//   const encrypted = await encrypt(data, keys);
 //   callOnStore((store) => {
 //     store.put({ id: 1, keys: keys, encrypted: encrypted });
 //   });
 // }
 
 async function encryptCustomTextDataSaveKey(text) {
-  var keys = await makeEncryptionKeys();
-  var encoder = new TextEncoder();
+  const keys = await makeEncryptionKeys();
+  const encoder = new TextEncoder();
   const encoded = encoder.encode(text);
-  var encrypted = await encrypt(encoded, keys);
+  const encrypted = await encrypt(encoded, keys);
   callOnStore((store) => {
     store.put({ id: 1, keys: keys, encrypted: encrypted });
   });
@@ -21,12 +21,12 @@ async function encryptCustomTextDataSaveKey(text) {
 // function loadKeyDecryptData() {
 //   return new Promise((res, rej) => {
 //     callOnStore((store) => {
-//       var getData = store.get(1);
+//       const getData = store.get(1);
 //       getData.onsuccess = async () => {
 //         if (!getData.result) return rej(Error("Oh Snap! No data here!"));
-//         var keys = getData.result.keys;
-//         var encrypted = getData.result.encrypted;
-//         var data = await decrypt(encrypted, keys);
+//         const keys = getData.result.keys;
+//         const encrypted = getData.result.encrypted;
+//         const data = await decrypt(encrypted, keys);
 //         console.log("decrypted data:", data);
 //         return res(data);
 //       };
@@ -37,12 +37,13 @@ async function encryptCustomTextDataSaveKey(text) {
 function loadKeyDecryptTextData() {
   return new Promise((res, rej) => {
     callOnStore((store) => {
-      var getData = store.get(1);
+      const getData = store.get(1);
       getData.onsuccess = async () => {
         if (!getData.result) return rej(Error("Oh Snap! No data here!"));
-        var keys = getData.result.keys;
-        var encrypted = getData.result.encrypted;
-        var data = await decryptText(encrypted, keys);
+        const { keys } = getData.result;
+        const { encrypted } = getData.result;
+        console.log("encrypted data:", encrypted);
+        const data = await decryptText(encrypted, keys);
         console.log("decrypted data:", data);
         return res(data);
       };
@@ -52,7 +53,7 @@ function loadKeyDecryptTextData() {
 
 function callOnStore(fn_) {
   // This works on all devices/browsers, and uses IndexedDBShim as a final fallback
-  var indexedDB =
+  const indexedDB =
     window.indexedDB ||
     window.mozIndexedDB ||
     window.webkitIndexedDB ||
@@ -60,19 +61,19 @@ function callOnStore(fn_) {
     window.shimIndexedDB;
 
   // Open (or create) the database
-  var open = indexedDB.open("ImxLinkDB", 1);
+  const open = indexedDB.open("ImxLinkDB", 1);
 
   // Create the schema
   open.onupgradeneeded = () => {
-    var db = open.result;
+    const db = open.result;
     db.createObjectStore("ImxLinkDB__store", { keyPath: "id" });
   };
 
   open.onsuccess = () => {
     // Start a new transaction
-    var db = open.result;
-    var tx = db.transaction("ImxLinkDB__store", "readwrite");
-    var store = tx.objectStore("ImxLinkDB__store");
+    const db = open.result;
+    const tx = db.transaction("ImxLinkDB__store", "readwrite");
+    const store = tx.objectStore("ImxLinkDB__store");
 
     fn_(store);
 
@@ -83,12 +84,12 @@ function callOnStore(fn_) {
 
 // @TODO: not sure what this is or why its needed.... ?
 // async function encryptDecrypt() {
-//   var data = await makeData();
+//   const data = await makeData();
 //   console.log("generated data", data);
-//   var keys = await makeKeys();
-//   var encrypted = await encrypt(data, keys);
+//   const keys = await makeKeys();
+//   const encrypted = await encrypt(data, keys);
 //   console.log("encrypted", encrypted);
-//   var finalData = await decrypt(encrypted, keys);
+//   const finalData = await decrypt(encrypted, keys);
 //   console.log("decrypted data", finalData);
 // }
 
