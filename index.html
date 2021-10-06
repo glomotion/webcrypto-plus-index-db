@@ -12,6 +12,7 @@
         background: #f1f1f1;
       }
     </style>
+    <input type="text" id="key2Save" placeholder="enter key to save here" />
     <button id="genKey">generate &amp; save encrypted key</button>
     <button id="fetchKey">fetch &amp; then decrypt key</button>
     <pre id="dump"></pre>
@@ -19,9 +20,12 @@
       const genButton = document.querySelector("#genKey");
       const fetchButton = document.querySelector("#fetchKey");
       const dump = document.querySelector("#dump");
-      genButton.addEventListener("click", () => encryptDataSaveKey());
+      const input = document.querySelector("#key2Save");
+      genButton.addEventListener("click", () => {
+        encryptCustomTextDataSaveKey(input.value);
+      });
       fetchButton.addEventListener("click", () =>
-        loadKeyDecryptData().then(({ data, encrypted }) => {
+        loadKeyDecryptTextData().then((data) => {
           dump.innerHTML = JSON.stringify(data);
         })
       );
