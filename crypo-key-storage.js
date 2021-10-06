@@ -51,7 +51,7 @@ function loadKeyDecryptTextData() {
   });
 }
 
-function callOnStore(fn_) {
+function callOnStore(callbackFunction) {
   // This works on all devices/browsers, and uses IndexedDBShim as a final fallback
   const indexedDB =
     window.indexedDB ||
@@ -75,7 +75,7 @@ function callOnStore(fn_) {
     const tx = db.transaction("ImxLinkDB__store", "readwrite");
     const store = tx.objectStore("ImxLinkDB__store");
 
-    fn_(store);
+    callbackFunction(store);
 
     // Close the db when the transaction is done
     tx.oncomplete = () => db.close();
