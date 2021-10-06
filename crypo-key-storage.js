@@ -1,38 +1,12 @@
-// async function encryptDataSaveKey() {
-//   const data = await makeRandomData();
-//   console.log("generated data", data);
-//   const keys = await makeEncryptionKeys();
-//   const encrypted = await encrypt(data, keys);
-//   callOnStore((store) => {
-//     store.put({ id: 1, keys: keys, encrypted: encrypted });
-//   });
-// }
-
 async function encryptCustomTextDataSaveKey(text) {
   const keys = await makeEncryptionKeys();
   const encoder = new TextEncoder();
   const encoded = encoder.encode(text);
   const encrypted = await encrypt(encoded, keys);
-  callOnStore((store) => {
-    store.put({ id: 1, keys: keys, encrypted: encrypted });
-  });
+  callOnStore((store) =>
+    store.put({ id: 1, keys: keys, encrypted: encrypted })
+  );
 }
-
-// function loadKeyDecryptData() {
-//   return new Promise((res, rej) => {
-//     callOnStore((store) => {
-//       const getData = store.get(1);
-//       getData.onsuccess = async () => {
-//         if (!getData.result) return rej(Error("Oh Snap! No data here!"));
-//         const keys = getData.result.keys;
-//         const encrypted = getData.result.encrypted;
-//         const data = await decrypt(encrypted, keys);
-//         console.log("decrypted data:", data);
-//         return res(data);
-//       };
-//     });
-//   });
-// }
 
 function loadKeyDecryptTextData() {
   return new Promise((res, rej) => {
@@ -82,21 +56,6 @@ function callOnStore(callbackFunction) {
   };
 }
 
-// @TODO: not sure what this is or why its needed.... ?
-// async function encryptDecrypt() {
-//   const data = await makeData();
-//   console.log("generated data", data);
-//   const keys = await makeKeys();
-//   const encrypted = await encrypt(data, keys);
-//   console.log("encrypted", encrypted);
-//   const finalData = await decrypt(encrypted, keys);
-//   console.log("decrypted data", finalData);
-// }
-
-// function makeRandomData() {
-//   return window.crypto.getRandomValues(new Uint8Array(16));
-// }
-
 function makeEncryptionKeys() {
   return window.crypto.subtle.generateKey(
     {
@@ -120,19 +79,6 @@ function encrypt(data, keys) {
     data // ArrayBuffer of data you want to encrypt
   );
 }
-
-// async function decrypt(data, keys) {
-//   return new Uint8Array(
-//     await window.crypto.subtle.decrypt(
-//       {
-//         name: "RSA-OAEP",
-//         // label: Uint8Array([...]) // optional
-//       },
-//       keys.privateKey, // from generateKey or importKey above
-//       data // ArrayBuffer of the data
-//     )
-//   );
-// }
 
 async function decryptText(data, keys) {
   const decoder = new TextDecoder();
