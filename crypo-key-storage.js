@@ -19,30 +19,32 @@ async function encryptCustomTextDataSaveKey(text) {
 }
 
 function loadKeyDecryptData() {
-  return new Promise((res) => {
+  return new Promise((res, rej) => {
     callOnStore((store) => {
       var getData = store.get(1);
       getData.onsuccess = async () => {
+        if (!getData.result) return rej(Error("Oh Snap! No data here!"));
         var keys = getData.result.keys;
         var encrypted = getData.result.encrypted;
         var data = await decrypt(encrypted, keys);
         console.log("decrypted data:", data);
-        res(data);
+        return res(data);
       };
     });
   });
 }
 
 function loadKeyDecryptTextData() {
-  return new Promise((res) => {
+  return new Promise((res, rej) => {
     callOnStore((store) => {
       var getData = store.get(1);
       getData.onsuccess = async () => {
+        if (!getData.result) return rej(Error("Oh Snap! No data here!"));
         var keys = getData.result.keys;
         var encrypted = getData.result.encrypted;
         var data = await decryptText(encrypted, keys);
         console.log("decrypted data:", data);
-        res(data);
+        return res(data);
       };
     });
   });
