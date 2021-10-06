@@ -1,12 +1,12 @@
-async function encryptDataSaveKey() {
-  var data = await makeRandomData();
-  console.log("generated data", data);
-  var keys = await makeEncryptionKeys();
-  var encrypted = await encrypt(data, keys);
-  callOnStore((store) => {
-    store.put({ id: 1, keys: keys, encrypted: encrypted });
-  });
-}
+// async function encryptDataSaveKey() {
+//   var data = await makeRandomData();
+//   console.log("generated data", data);
+//   var keys = await makeEncryptionKeys();
+//   var encrypted = await encrypt(data, keys);
+//   callOnStore((store) => {
+//     store.put({ id: 1, keys: keys, encrypted: encrypted });
+//   });
+// }
 
 async function encryptCustomTextDataSaveKey(text) {
   var keys = await makeEncryptionKeys();
@@ -18,21 +18,21 @@ async function encryptCustomTextDataSaveKey(text) {
   });
 }
 
-function loadKeyDecryptData() {
-  return new Promise((res, rej) => {
-    callOnStore((store) => {
-      var getData = store.get(1);
-      getData.onsuccess = async () => {
-        if (!getData.result) return rej(Error("Oh Snap! No data here!"));
-        var keys = getData.result.keys;
-        var encrypted = getData.result.encrypted;
-        var data = await decrypt(encrypted, keys);
-        console.log("decrypted data:", data);
-        return res(data);
-      };
-    });
-  });
-}
+// function loadKeyDecryptData() {
+//   return new Promise((res, rej) => {
+//     callOnStore((store) => {
+//       var getData = store.get(1);
+//       getData.onsuccess = async () => {
+//         if (!getData.result) return rej(Error("Oh Snap! No data here!"));
+//         var keys = getData.result.keys;
+//         var encrypted = getData.result.encrypted;
+//         var data = await decrypt(encrypted, keys);
+//         console.log("decrypted data:", data);
+//         return res(data);
+//       };
+//     });
+//   });
+// }
 
 function loadKeyDecryptTextData() {
   return new Promise((res, rej) => {
@@ -60,26 +60,24 @@ function callOnStore(fn_) {
     window.shimIndexedDB;
 
   // Open (or create) the database
-  var open = indexedDB.open("MyDatabase", 1);
+  var open = indexedDB.open("ImxLinkDB", 1);
 
   // Create the schema
   open.onupgradeneeded = () => {
     var db = open.result;
-    db.createObjectStore("MyObjectStore", { keyPath: "id" });
+    db.createObjectStore("ImxLinkDB__store", { keyPath: "id" });
   };
 
-  open.onsuccess = function () {
+  open.onsuccess = () => {
     // Start a new transaction
     var db = open.result;
-    var tx = db.transaction("MyObjectStore", "readwrite");
-    var store = tx.objectStore("MyObjectStore");
+    var tx = db.transaction("ImxLinkDB__store", "readwrite");
+    var store = tx.objectStore("ImxLinkDB__store");
 
     fn_(store);
 
     // Close the db when the transaction is done
-    tx.oncomplete = function () {
-      db.close();
-    };
+    tx.oncomplete = () => db.close();
   };
 }
 
@@ -94,9 +92,9 @@ function callOnStore(fn_) {
 //   console.log("decrypted data", finalData);
 // }
 
-function makeRandomData() {
-  return window.crypto.getRandomValues(new Uint8Array(16));
-}
+// function makeRandomData() {
+//   return window.crypto.getRandomValues(new Uint8Array(16));
+// }
 
 function makeEncryptionKeys() {
   return window.crypto.subtle.generateKey(
@@ -106,8 +104,7 @@ function makeEncryptionKeys() {
       publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
       hash: { name: "SHA-256" }, // can be "SHA-1", "SHA-256", "SHA-384", or "SHA-512"
     },
-    // false, // whether the key is extractable (i.e. can be used in exportKey)
-    true,
+    false, // whether the key is extractable (i.e. can be used in exportKey)
     ["encrypt", "decrypt"] // must be ["encrypt", "decrypt"] or ["wrapKey", "unwrapKey"]
   );
 }
@@ -123,18 +120,18 @@ function encrypt(data, keys) {
   );
 }
 
-async function decrypt(data, keys) {
-  return new Uint8Array(
-    await window.crypto.subtle.decrypt(
-      {
-        name: "RSA-OAEP",
-        // label: Uint8Array([...]) // optional
-      },
-      keys.privateKey, // from generateKey or importKey above
-      data // ArrayBuffer of the data
-    )
-  );
-}
+// async function decrypt(data, keys) {
+//   return new Uint8Array(
+//     await window.crypto.subtle.decrypt(
+//       {
+//         name: "RSA-OAEP",
+//         // label: Uint8Array([...]) // optional
+//       },
+//       keys.privateKey, // from generateKey or importKey above
+//       data // ArrayBuffer of the data
+//     )
+//   );
+// }
 
 async function decryptText(data, keys) {
   const decoder = new TextDecoder();
