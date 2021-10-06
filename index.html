@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>IMX Labs App</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+  </head>
+  <body>
+    <style>
+      pre {
+        padding: 30px;
+        background: #f1f1f1;
+      }
+    </style>
+    <button id="genKey">generate &amp; save encrypted key</button>
+    <button id="fetchKey">fetch &amp; then decrypt key</button>
+    <pre id="dump"></pre>
+    <script>
+      const genButton = document.querySelector("#genKey");
+      const fetchButton = document.querySelector("#fetchKey");
+      const dump = document.querySelector("#dump");
+      genButton.addEventListener("click", () => encryptDataSaveKey());
+      fetchButton.addEventListener("click", () =>
+        loadKeyDecryptData().then(({ data, encrypted }) => {
+          dump.innerHTML = JSON.stringify(data);
+        })
+      );
+    </script>
+    <script src="./crypo-key-storage.js"></script>
+  </body>
+</html>
